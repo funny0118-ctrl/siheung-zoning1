@@ -29,8 +29,21 @@ def load_data():
 
 df = load_data()
 
+# -------------------------------------------------
+# ✅ 제목
+# -------------------------------------------------
 st.title("🏢 시흥시 용도지역별 건축물 가능 여부 조회")
 
+# ✅ ✅ ✅ 제목 아래 고정 안내문 추가
+st.info("""
+ℹ️ 본 시스템은 시흥시 용도지역별 건축물 가능 여부를 간편 조회하기 위한 참고용 서비스입니다.
+
+⚠️ 본 자료는 단순 조회용으로 정확한 사항은 반드시 해당 부서에 확인하시기 바랍니다.
+""")
+
+# -------------------------------------------------
+# ✅ 파일 확인
+# -------------------------------------------------
 if df.empty:
     st.error("❌ zoning_db.xlsx 파일이 없거나 비어 있습니다.")
     st.stop()
@@ -93,12 +106,9 @@ if not result.empty:
     st.markdown("---")
     st.subheader("📋 조회 결과")
 
-    # ✅ 지구단위구역 안내문 + 추가 문구
+    # ✅ 지구단위구역 안내문
     if "지구단위" in selected_region:
-        st.info(
-            "📌 지구단위구역은 해당지역 지구단위계획지침을 참고하시기 바랍니다."
-            "⚠️ 본 자료는 단순 조회용으로 정확한 사항은 해당부서에서 확인하시기 바랍니다."
-        )
+        st.info("📌 지구단위구역은 해당지역 지구단위계획지침을 참고하시기 바랍니다.")
 
     status = str(row.get("가능여부", "")).strip()
 
@@ -115,11 +125,12 @@ if not result.empty:
         if pd.notna(condition) and str(condition).strip():
             st.info(f"📌 조건 : {condition}")
 
-    # ✅ 심의 여부 표시
+    # ✅ 도시계획위원회 심의 대상 표시
     if "도시계획위원회 심의 대상" in df.columns:
         committee = row.get("도시계획위원회 심의 대상", "")
         if pd.notna(committee) and str(committee).strip():
             st.write(f"📝 도시계획위원회 심의 : {committee}")
 
+    # ✅ 상세 데이터 보기
     with st.expander("📊 상세 데이터 보기"):
         st.dataframe(result, use_container_width=True)
