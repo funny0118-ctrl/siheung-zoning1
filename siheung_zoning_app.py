@@ -8,8 +8,6 @@ layout="wide"
 
 st.title("시흥시 용도지역별 건축물 가능 여부 조회")
 
-# 엑셀 자동 로드
-
 DB_FILE = "zoning_db.xlsx"
 
 try:
@@ -28,7 +26,6 @@ st.stop()
 regions = sorted(df["용도지역"].dropna().astype(str).unique())
 region = st.selectbox("용도지역", regions)
 
-선택한 용도지역의 건축물 용도 목록
 
 uses = sorted(
 df[df["용도지역"].astype(str) == region]["건축물용도"]
@@ -37,14 +34,11 @@ df[df["용도지역"].astype(str) == region]["건축물용도"]
 .unique()
 )
 
-검색창
 
 search_text = st.text_input(
 "건축물 용도 검색",
 placeholder="예: 판매시설, 공장, 의료시설"
 )
-
-검색어 필터링
 
 if search_text:
 filtered_uses = [
@@ -53,8 +47,6 @@ if search_text.lower() in str(u).lower()
 ]
 else:
 filtered_uses = uses
-
-검색 결과 선택
 
 use = st.selectbox(
 "건축물 용도 선택",
