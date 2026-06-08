@@ -14,20 +14,20 @@ def load_data():
 return pd.read_excel(DB_FILE)
 
 try:
-df = load_data()
+    df = load_data()
 except Exception as e:
-st.error(f"DB 파일을 읽을 수 없습니다.\n\n{e}")
-st.stop()
+    st.error(f"DB 파일을 읽을 수 없습니다.\n\n{e}")
+    st.stop()
 
-st.title("🏢 시흥시 용도지역별 건축물 가능 여부 조회")
+    st.title("🏢 시흥시 용도지역별 건축물 가능 여부 조회")
 
 required_columns = ["용도지역", "건축물용도", "가능여부"]
 
 missing = [col for col in required_columns if col not in df.columns]
 
 if missing:
-st.error(f"필수 컬럼이 없습니다 : {missing}")
-st.stop()
+    st.error(f"필수 컬럼이 없습니다 : {missing}")
+    st.stop()
 
 regions = sorted(df["용도지역"].dropna().astype(str).unique())
 
@@ -59,8 +59,8 @@ if search_text.lower() in u.lower()
 ]
 
 if len(uses) == 0:
-st.warning("검색 결과가 없습니다.")
-st.stop()
+    st.warning("검색 결과가 없습니다.")
+    st.stop()
 
 selected_use = st.selectbox(
 "건축물 용도 선택",
@@ -76,8 +76,8 @@ if not result.empty:
 ```
 row = result.iloc[0]
 
-st.markdown("---")
-st.subheader("조회 결과")
+    st.markdown("---")
+    st.subheader("조회 결과")
 
 status = str(row.get("가능여부", "")).strip()
 
