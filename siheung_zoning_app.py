@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 
 # -------------------------------------------------
-# ✅ 기본 설정 (반드시 최상단)
+# ✅ 기본 설정
 # -------------------------------------------------
 st.set_page_config(
     page_title="시흥시 용도지역별 건축물 가능 여부 조회",
@@ -11,14 +11,11 @@ st.set_page_config(
     layout="wide"
 )
 
-# -------------------------------------------------
-# ✅ DB 경로 (Streamlit Cloud 대응)
-# -------------------------------------------------
 BASE_DIR = Path(__file__).parent
 DB_FILE = BASE_DIR / "zoning_db.xlsx"
 
 # -------------------------------------------------
-# ✅ 데이터 로딩 (캐시 적용)
+# ✅ 데이터 로딩
 # -------------------------------------------------
 @st.cache_data(show_spinner=False)
 def load_data():
@@ -26,34 +23,22 @@ def load_data():
         return pd.DataFrame()
 
     df = pd.read_excel(DB_FILE, dtype=str)
-
-    # ✅ 컬럼 공백 제거
     df.columns = df.columns.str.strip()
-
-    # ✅ 문자열 값 공백 제거
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
-
     return df
 
 df = load_data()
 
-# -------------------------------------------------
-# ✅ 타이틀
-# -------------------------------------------------
 st.title("🏢 시흥시 용도지역별 건축물 가능 여부 조회")
 
-# -------------------------------------------------
-# ✅ 파일 없을 경우
-# -------------------------------------------------
 if df.empty:
     st.error("❌ zoning_db.xlsx 파일이 없거나 비어 있습니다.")
     st.stop()
 
 # -------------------------------------------------
-# ✅ 필수 컬럼 자동 보정
+# ✅ 필수 컬럼 보정
 # -------------------------------------------------
 required_columns = ["용도지역", "건축물용도", "가능여부"]
-
 for col in required_columns:
     if col not in df.columns:
         df[col] = ""
@@ -75,7 +60,7 @@ selected_region = st.selectbox(
 region_df = df[df["용도지역"] == selected_region]
 
 # -------------------------------------------------
-# ✅ 검색창
+# ✅ 건축물 검색
 # -------------------------------------------------
 search_text = st.text_input(
     "🔎 건축물 용도 검색",
@@ -88,7 +73,7 @@ if search_text:
     uses = [u for u in uses if search_text.lower() in u.lower()]
 
 if not uses:
-    st.warning("검색 결과가 없습니다. 다른 검색어를 입력하세요.")
+    st.warning("검색 결과가 없습니다.")
     st.stop()
 
 selected_use = st.selectbox(
@@ -107,6 +92,15 @@ if not result.empty:
 
     st.markdown("---")
     st.subheader("📋 조회 결과")
+
+    # ✅ 지구단위구역 안내문 + 추가 문구
+    if "지구단위" in selected_region:
+        st.info(
+            "📌 지구단위구역은 해당지역 지구단위계획지침을 참고하시기 바랍니다.
+
+"
+            "⚠️ 본 자료는 단순 조회용으로 정확한 사항은 해당부서에서 확인하시기 바랍니다."
+        )
 
     status = str(row.get("가능여부", "")).strip()
 
@@ -129,6 +123,5 @@ if not result.empty:
         if pd.notna(committee) and str(committee).strip():
             st.write(f"📝 도시계획위원회 심의 : {committee}")
 
-    # ✅ 상세 데이터
     with st.expander("📊 상세 데이터 보기"):
         st.dataframe(result, use_container_width=True)
