@@ -6,7 +6,7 @@ from pathlib import Path
 # ✅ 기본 설정
 # -------------------------------------------------
 st.set_page_config(
-    page_title="시흥시 용도지역별 건축물 가능 여부 조회",
+    page_title="시흥시 용도지역별 건축물 가능 여부 조회(테스트용)",
     page_icon="🏢",
     layout="wide"
 )
