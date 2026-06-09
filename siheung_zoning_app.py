@@ -49,7 +49,12 @@ if df.empty:
 # -------------------------------------------------
 # ✅ 필수 컬럼 보정
 # -------------------------------------------------
-required_columns = ["용도지역", "건축물용도", "가능여부"]
+required_columns = [
+    "용도지역",
+    "대분류",
+    "건축물용도",
+    "가능여부"
+]
 for col in required_columns:
     if col not in df.columns:
         df[col] = ""
@@ -69,7 +74,26 @@ selected_region = st.selectbox(
 )
 
 region_df = df[df["용도지역"] == selected_region]
+# -------------------------------------------------
+# ✅ 대분류 선택
+# -------------------------------------------------
 
+categories = sorted(
+    region_df["대분류"]
+    .dropna()
+    .unique()
+)
+
+selected_category = st.selectbox(
+    "🏢 건축물 대분류",
+    ["전체"] + list(categories)
+)
+
+if selected_category != "전체":
+    region_df = region_df[
+        region_df["대분류"]
+        == selected_category
+    ]
 # -------------------------------------------------
 # ✅ 건축물 검색
 # -------------------------------------------------
